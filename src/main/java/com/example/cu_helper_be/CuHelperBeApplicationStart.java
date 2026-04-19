@@ -24,6 +24,8 @@ public class CuHelperBeApplicationStart {
         long start = System.currentTimeMillis();
         LocalDateTime bootTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
 
+        //test
+
         try {
             // Spring Boot 실행
             SpringApplication.run(CuHelperBeApplicationStart.class, args);
