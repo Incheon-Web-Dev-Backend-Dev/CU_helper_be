@@ -1,14 +1,12 @@
 package com.example.cu_helper_be.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 public class OrderItemDto {
     private Long id;
     private Long orderId;

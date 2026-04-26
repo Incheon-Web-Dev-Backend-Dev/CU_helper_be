@@ -47,41 +47,4 @@ public class CuHelperBeApplicationStart {
             log.error("Server failed to start", e);
         }
     }
-
-    @Bean
-    public CommandLineRunner run(ProductRepository productRepository, OrderRepository orderRepository) {
-        return args -> {
-
-            // ======= Product 조회 =======
-            log.info("======================================");
-            log.info("Product 전체 조회 시작");
-            log.info("======================================");
-
-            List<ProductDto> products = productRepository.findAll();
-
-            if (products.isEmpty()) {
-                log.info("조회된 상품이 없습니다.");
-            } else {
-                products.forEach(p -> log.info("Product : {}", p));
-            }
-
-            log.info("총 {}개 상품 조회 완료", products.size());
-
-            // ======= Order 조회 =======
-            log.info("======================================");
-            log.info("Order 전체 조회 시작");
-            log.info("======================================");
-
-            List<OrderDto> orders = orderRepository.findAll();
-
-            if (orders.isEmpty()) {
-                log.info("조회된 주문이 없습니다.");
-            } else {
-                orders.forEach(o -> log.info("Order : {}", o));
-            }
-
-            log.info("총 {}개 주문 조회 완료", orders.size());
-            log.info("======================================");
-        };
-    }
 }

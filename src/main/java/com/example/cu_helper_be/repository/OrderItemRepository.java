@@ -23,7 +23,7 @@ public class OrderItemRepository {
     }
 
     public List<OrderItemDto> findAll() {
-        String url = supabaseConfig.getUrl() + "/rest/v1/orderitems?select=*";
+        String url = supabaseConfig.getUrl() + "/rest/v1/orderItems?select=*";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("apikey", supabaseConfig.getKey());
