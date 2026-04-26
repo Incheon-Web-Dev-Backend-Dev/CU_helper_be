@@ -13,7 +13,6 @@ public class ProductDto {
     private Long consumerPrice;
     private Boolean isEvent;
     private Short eventType;
-    private Long eventPrice;
     private Long quantity;
     private String createdAt;
     private String image;

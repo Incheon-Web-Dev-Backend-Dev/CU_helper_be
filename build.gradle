@@ -34,7 +34,7 @@ dependencies {
     // =========================
     // Dev
     // =========================
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    // developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     // =========================
     // DB
