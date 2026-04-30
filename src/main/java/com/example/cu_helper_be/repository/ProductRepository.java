@@ -3,6 +3,7 @@ package com.example.cu_helper_be.repository;
 import com.example.cu_helper_be.config.SupabaseConfig;
 import com.example.cu_helper_be.dto.ProductDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.HttpClientErrorException;
@@ -18,8 +19,7 @@ public class ProductRepository {
     private final RestTemplate restTemplate;
     private final SupabaseConfig supabaseConfig;
 
-
-    // 상품 전체 조회
+    /*** 상품 전체 조회 ***/
     public List<ProductDto> findAll() {
         String url = supabaseConfig.getSupabaseUrl() + "/rest/v1/products?select=*";
 

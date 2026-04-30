@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/*** 상품 컨트롤러 - 상품 조회 및 등록 REST API ***/
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
@@ -15,7 +16,7 @@ public class ProductController {
 
     private final ProductService productService;
 
-    // 상품 전체 조회
+    /*** 상품 전체 조회 ***/
     @GetMapping
     public ResponseEntity<List<ProductDto>> getAllProducts() {
         return ResponseEntity.ok(productService.getAllProducts());

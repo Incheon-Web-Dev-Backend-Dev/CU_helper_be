@@ -2,27 +2,23 @@ package com.example.cu_helper_be.repository;
 
 import com.example.cu_helper_be.config.SupabaseConfig;
 import com.example.cu_helper_be.dto.OrderDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
+/*** 주문 레포지토리 - Supabase REST API HTTP 통신 ***/
 @Repository
 @RequiredArgsConstructor
 public class OrderRepository {
 
-    // JDBC 대신 HTTPfh Supabase와 통신하기 위해 사용
+    /*** JDBC 대신 HTTP로 Supabase와 통신 ***/
     private final RestTemplate restTemplate;
 
-    // supabase 설정 클래스
-    // 매번 URL과 키를 하드코딩하지 않기 위해 별도 Config로 분리
+    /*** Supabase 설정 (URL, API Key) ***/
     private final SupabaseConfig supabaseConfig;
-
 
     public List<OrderDto> findAll() {
 
@@ -57,5 +53,71 @@ public class OrderRepository {
         );
 
         return Arrays.asList(response.getBody());
+    }
+
+    /*** 주문 생성 - Supabase orders 테이블 INSERT, 생성된 레코드 반환 ***/
+    public OrderDto save(OrderDto request) {
+        String url = supabaseConfig.getUrl() + "/rest/v1/orders";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("apikey", supabaseConfig.getKey());
+        headers.set("Authorization", "Bearer " + supabaseConfig.getKey());
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        /*** return=representation: 삽입된 레코드를 응답으로 반환받기 위한 Supabase 헤더 ***/
+        headers.set("Prefer", "return=representation");
+
+        /*** items 필드는 order_items에 별도 저장되므로 orders 테이블 INSERT 본문에서 제외 ***/
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", request.getName());
+        body.put("phone", request.getPhone());
+        body.put("password", request.getPassword());
+        body.put("totalPrice", request.getTotalPrice());
+        body.put("isPaid", false);
+        body.put("storeCode", request.getStoreCode());
+        /*** orderNumber: 타임스탬프 기반 고유값 (UNIQUE 제약 조건 충족) ***/
+        body.put("orderNumber", System.currentTimeMillis());
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
+
+        /*** Supabase POST는 return=representation 시 배열로 응답 → 첫 번째 요소 반환 ***/
+        ResponseEntity<OrderDto[]> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                entity,
+                OrderDto[].class
+        );
+
+        OrderDto[] result = response.getBody();
+        if (result == null || result.length == 0) {
+            throw new RuntimeException("주문 생성 실패: Supabase 응답이 비어있습니다.");
+        }
+
+        return result[0];
+    }
+
+    /*** 전화번호로 주문 단건 조회 - 예약자 본인 인증 및 상세조회 용도 ***/
+    public Optional<OrderDto> findByPhone(String phone) {
+        String url = supabaseConfig.getUrl() + "/rest/v1/orders?phone=eq." + phone + "&select=*";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("apikey", supabaseConfig.getKey());
+        headers.set("Authorization", "Bearer " + supabaseConfig.getKey());
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<OrderDto[]> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                entity,
+                OrderDto[].class
+        );
+
+        OrderDto[] result = response.getBody();
+        if (result == null || result.length == 0) {
+            return Optional.empty();
+        }
+        return Optional.of(result[0]);
     }
 }
